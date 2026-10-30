@@ -126,7 +126,7 @@ body{background:#fff}
 .process-step .step-icon svg{height:23px;width:23px;stroke:currentColor;fill:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
 .process-step h3{font-family:var(--font-display,Georgia,serif);font-size:clamp(24px,2.3vw,31px);font-weight:400;margin:0}
 
-.channel-layout{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.channel-layout{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
 .channel{border:1px solid var(--line);padding:30px 28px 32px;min-height:195px;display:grid;grid-template-columns:52px 1fr;gap:12px}
 .channel-icon{color:var(--blue);height:32px;width:32px}.channel-icon svg{width:31px;height:31px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .channel h3{font-family:var(--font-display,Georgia,serif);font-size:clamp(26px,2.6vw,35px);font-weight:400;line-height:1.16;margin:0 0 13px}
