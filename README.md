@@ -324,3 +324,126 @@ that weren't actually run in a real browser against a real network.
 
 None of the above blocks reviewing this prototype — they are flagged for
 the Stage B independent audit per brief §9.
+
+---
+
+## 12. Branch: `redesign/editorial-visual-sync` — visual synthesis with PR #1
+
+This branch is **not merged into `main`**. It implements the owner's request
+to combine the visual presentation of the ChatGPT-designed homepage
+reference (GitHub PR #1, `design-references/chatgpt-homepage/`, Direction
+A — "Light Editorial") with this prototype's lightweight, performance-first
+architecture. It supersedes nothing on `main` until explicitly approved.
+
+### What changed (visual only — content, routes, SEO, tracking spec unchanged)
+
+- **Typography**: dropped the Georgia display stack in favour of one
+  system-sans stack for both display and body type (matches the
+  reference's Direction A), with tighter letter-spacing and a larger hero
+  clamp scale. Zero added network requests either way.
+- **Colour**: shifted from the warm clay/rust palette to the reference's
+  quieter, cooler editorial palette — warm-white paper, deep-teal accent,
+  a distinct orange focus ring. Still a single selective accent colour.
+- **Section-head pattern**: introduced the reference's defining device —
+  eyebrow/heading on the left, supporting line on the right, justified
+  apart — in place of the original's stacked heading + lead paragraph.
+  Applied wherever a section already had both a heading and a lead
+  (Selected Work, About transition, Trust, both closing CTAs, Ad Films'
+  "Idea" section). Sections with a heading only were left as plain
+  headings — no new copy was introduced anywhere to fill the pattern.
+- **Pathway tiles (Home)**: restyled as a bordered editorial grid with a
+  numbered category label + bold title, dropping the small arrow-icon
+  affordance. The category labels are the same words the original build
+  already used (Ad Films, Explainer Videos, etc.) — none invented.
+- **Work / case cards**: restyled onto a richer "moody gradient" media
+  placeholder (still an honest, clearly-labelled placeholder — no stock
+  or invented imagery, same disclosure text as before) echoing the
+  reference's hero-image treatment, instead of the diagonal-hash chip
+  style (which is now reserved for the trust-logo slots only).
+- **Trust strip**: restyled from a flex row of fixed-size chips to an
+  even 5-column bordered grid, matching the reference's "logo-line".
+- **Closing CTA bands**: restyled from a stacked single column to a
+  two-column grid (headline + copy left, buttons right on desktop;
+  stacks on mobile) — same approved CTA copy and the same real
+  `pathwayproductions.in/contact/?interest=…` destinations (the
+  reference's own mock used `mailto:` placeholders; those were **not**
+  adopted, since the master brief's approved destinations take
+  precedence over the design reference per its own README instructions).
+- **Header**: lighter-weight nav type and an outlined (not filled)
+  Contact button in the nav, for a less heavy top bar. Nav structure,
+  routes, ARIA wiring and the mobile toggle are untouched.
+
+### What did NOT change
+
+- All approved copy, verbatim, on all three pages.
+- Route map, `data-pending` interception behaviour, and the
+  `data-video-activate` honest video-placeholder pattern.
+- SEO meta (`title`/`description`/`robots`) on all three pages.
+- Tracking spec — still fully undocumented/not-implemented, as before.
+- `assets/js/main.js` — zero JS changes; only CSS and section markup
+  changed.
+
+### A real bug found and fixed during this pass
+
+The Ad Films poster cards originally centred both the "poster frame
+pending" caption text and the play-button icon in the same spot; once the
+media placeholder switched to the richer gradient skin, a two-line
+caption (e.g. "Spice Hill — poster frame pending") visually collided with
+the play icon. Fixed by moving the play affordance to a small top-right
+badge and the caption to a bottom-left corner — confirmed clean via
+Playwright screenshots on both desktop and mobile widths.
+
+### Verification performed on this branch
+
+- Playwright, desktop (1440px) and mobile (375px), all three pages: zero
+  horizontal overflow (`scrollWidth === clientWidth` on every page/width
+  combination tested).
+- Mobile nav toggle: `aria-expanded` flips correctly, `hidden` attribute
+  toggles correctly.
+- Pending-route interception and video-placeholder interception: both
+  still fire the correct banner copy after the markup changes.
+- **Real Lighthouse runs** (not just documented steps), via
+  `npx lighthouse`, simulated throttling, against the local static
+  server — not a live hosted URL, so treat these as a lower bound rather
+  than field data:
+
+  | Page | Form factor | Performance | FCP | LCP | TBT | CLS |
+  |---|---|---|---|---|---|---|
+  | Home | Mobile | 100 | 1.0s | 1.0s | 0ms | 0 |
+  | Home | Desktop | 98 | 0.9s | 0.9s | 0ms | 0 |
+  | Ad Films | Mobile | 100 | 1.0s | 1.0s | 0ms | 0 |
+  | PPC | Mobile | 100 | 1.0s | 1.0s | 0ms | 0 |
+
+  Total page weight: Home 29 KiB, Ad Films 28 KiB, PPC 25 KiB (HTML+CSS+JS,
+  uncompressed-on-disk figures as measured by Lighthouse's network
+  panel). Only the performance category was audited (`--preset=perf`);
+  accessibility/SEO/best-practices categories were not re-run on this
+  branch — the accessibility behaviours verified above (focus rings,
+  ARIA, skip link, reduced-motion) carry over unchanged from `main`, but
+  were not re-scored by Lighthouse itself here.
+
+### Raw/gzip asset sizes on this branch
+
+| File | Raw | Gzip |
+|---|---|---|
+| `assets/css/style.css` | 16.3 KB | 4.4 KB |
+| `assets/js/main.js` | 3.4 KB (unchanged) | 1.4 KB |
+| `index.html` | 9.1 KB | 2.8 KB |
+| `ad-films/index.html` | 8.1 KB | 2.7 KB |
+| `digital-marketing/ppc/index.html` | 5.2 KB | 2.0 KB |
+
+CSS grew from the original (~12.8 KB raw) to support the richer
+placeholder skin and section-head pattern; still well inside a
+lightweight budget and still a single render-blocking request with no
+external font/script dependency.
+
+### Still pending before this can be considered for merge
+
+- Owner review of the two directions and sign-off on this synthesis
+  specifically (not a toggle — this build picked one cohesive direction,
+  Direction A, rather than keeping the reference's A/B comparison
+  toggle, since a production page ships one design, not a switcher).
+- Real hero/poster imagery, once supplied, will change actual LCP/byte
+  weight from the "0 real images yet" baseline measured above.
+- No merge, no deploy, no WordPress changes have been made or proposed
+  on this branch.
